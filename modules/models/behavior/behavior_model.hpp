@@ -24,6 +24,7 @@ class ObservedWorld;
 namespace models {
 namespace behavior {
 using dynamic::Trajectory;
+using dynamic::Input;
 
 typedef unsigned int DiscreteAction;
 typedef double Continuous1DAction;
@@ -54,9 +55,8 @@ class BehaviorModel : public modules::commons::BaseType {
   bool get_active_model() const { return active_model_; }
   virtual Trajectory Plan(float delta_time,
                           const world::ObservedWorld& observed_world) = 0;
-
   virtual BehaviorModel *Clone() const = 0;
-
+  virtual void set_action(const Input& inp) {}
   Action get_last_action() const {return last_action_; };
   void set_last_action(const Action action) {last_action_ = action;}
 
