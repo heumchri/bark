@@ -16,6 +16,9 @@ class MPViewer(BaseViewer):
     def __init__(self, params=None, **kwargs):
         super(MPViewer, self).__init__(params=params, **kwargs)
         self.axes = kwargs.pop("axes", plt.subplots(figsize=(20,20))[1])
+        self.capture_click = kwargs.pop("capture_click", False)
+        if self.capture_click:
+            cid = self.axes.get_figure().canvas.mpl_connect('button_press_event', self.onclick)
 
     def drawPoint2d(self, point2d, color, alpha):
         self.axes.plot(
@@ -98,6 +101,12 @@ class MPViewer(BaseViewer):
 
         self.axes.get_xaxis().set_visible(False)
         self.axes.get_yaxis().set_visible(False)
+
+    def onclick(self, event):
+        print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
+          ('double' if event.dblclick else 'single', event.button,
+           event.x, event.y, event.xdata, event.ydata))
+
 
     def clear(self):
         self.axes.cla()

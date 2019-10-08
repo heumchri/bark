@@ -14,20 +14,20 @@ from modules.runtime.viewer.threaded_viewer import ThreadedViewer
 import time
 import os
 
-scenario_param_file ="highway_merging.json" # must be within examples params folder
+scenario_param_file ="4way_intersection.json" # must be within examples params folder
 
 param_server = ParameterServer(filename= os.path.join("examples/params/",scenario_param_file))
 
 scenario_generation = UniformVehicleDistribution(num_scenarios=3, random_seed=0, params=param_server)
 
 
-viewer = PygameViewer(params=param_server, x_range=[-50,50], y_range=[-20,80], use_world_bounds=True)
+viewer = MPViewer(params=param_server, x_range=[-50,50], y_range=[-20,80], use_world_bounds=True, capture_click=True)
 
 sim_step_time = param_server["simulation"]["step_time",
                                         "Step-time used in simulation",
                                         0.2]
 sim_real_time_factor = param_server["simulation"]["real_time_factor",
-                                                "execution in real-time or faster", 1]
+                                                "execution in real-time or faster", 0.05]
 
 
 scenario, idx = scenario_generation.get_next_scenario()
