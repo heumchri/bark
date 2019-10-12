@@ -14,6 +14,8 @@ cc_library(
         "//modules/models/execution:execution",
 	    "@com_github_eigen_eigen//:eigen",
         "@com_google_ceres_solver//:ceres",
+        "@com_google_ceres_solver//:ceres_solver",
+        "@com_google_ceres_solver//:ceres_problem",
     ],
     visibility = ["//visibility:public"],
     copts=

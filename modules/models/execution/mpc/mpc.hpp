@@ -9,7 +9,11 @@
 
 #include <Eigen/Core>
 #include <vector>
-#include "ceres/ceres.h"
+// #include "ceres/ceres.h"
+#include "ceres/problem.h"
+#include "ceres/dynamic_autodiff_cost_function.h"
+#include "ceres/solver.h"
+#include "ceres/loss_function.h"
 #include "glog/logging.h"
 
 #include "modules/models/execution/execution_model.hpp"
