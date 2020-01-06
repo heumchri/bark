@@ -16,6 +16,7 @@ cc_library(
     hdrs= ["behavior_model.hpp"],
     deps = [
         "//modules/models/behavior/constant_velocity:include",
+        "//modules/models/behavior/data_driven:include",
         "//modules/models/behavior/dynamic_model:include",
         "//modules/models/behavior/idm:include",
         "//modules/models/behavior/longitudinal_acceleration:include",
