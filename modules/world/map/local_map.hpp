@@ -17,6 +17,7 @@
 #include "modules/world/map/driving_corridor.hpp"
 #include "modules/geometry/geometry.hpp"
 #include "modules/world/map/frenet.hpp"
+#include "modules/geometry/polygon.hpp"
 
 namespace modules {
 namespace world {
@@ -86,9 +87,9 @@ class LocalMap {
   //! Functions
   void ConcatenateLines(const std::vector<LanePtr>& lanes,
                         Line& line_of_corridor,
-                        std::vector< std::pair<int, LaneId> >& lane_ids);
+                        std::vector<std::pair<int, LaneId>>& lane_ids);
 
-  LaneId GoalLaneIdFromGoalDefinitionPolygon(const GoalDefinitionPolygon& goal_definition);
+  LaneId GoalLaneIdFromPolygon(const modules::geometry::Polygon& goal_polygon);
 
   LanePtr FindLane(const Point2d& point) const;
 
@@ -122,4 +123,3 @@ using LocalMapPtr = std::shared_ptr<LocalMap>;
 }  // namespace modules
 
 #endif  // MODULES_WORLD_MAP_LOCAL_MAP_HPP_
-
