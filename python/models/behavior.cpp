@@ -61,21 +61,10 @@ void python_behavior(py::module m) {
              BehaviorModel,
              shared_ptr<BehaviorDataDriven>>(m,
                                                    "BehaviorDataDriven")
-      .def(py::init<modules::commons::Params *>())
+      .def(py::init<modules::commons::Params *, Trajectory>())
       .def("__repr__", [](const BehaviorDataDriven &m) {
         return "bark.behavior.BehaviorDataDriven";
-      })
-      .def(py::pickle(
-        [](const BehaviorDataDriven &b) { 
-            return py::make_tuple(b.get_last_trajectory()); // 0
-        },
-        [](py::tuple t) { // __setstate__
-            if (t.size() != 1)
-                throw std::runtime_error("Invalid behavior model state!");
-
-            /* Create a new C++ instance */
-            return new BehaviorDataDriven(nullptr, nullptr); // param pointer must be set afterwards
-        }));
+      });
 
     py::class_<BehaviorIDMClassic,
              BehaviorModel,
