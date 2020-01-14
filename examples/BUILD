@@ -26,6 +26,20 @@ py_binary(
 )
 
 py_test(
+  name = "interaction_dataset_DEU",
+  srcs = ["interaction_dataset_DEU.py"],
+  data = ['//python:bark.so',
+          '//modules/runtime/tests:xodr_data',
+          ':params'],
+  imports = ['../python/'],
+  deps = ["//modules/runtime/commons:parameters",
+          "//modules/runtime/commons:xodr_parser",
+          "//modules/runtime/viewer:pygame_viewer",
+          "//modules/runtime/viewer:matplotlib_viewer",
+          "//modules/runtime:runtime",],
+)
+
+py_test(
   name = "planner_uct_benchmark",
   srcs = ["planner_uct_benchmark.py"],
   data = ['//python:bark.so',

@@ -64,7 +64,7 @@ def read_tracks_from_csv(filename):
 
 
 # track file definition
-filename = "modules/runtime/tests/data/DR_DEU_Merging_MT/vehicle_tracks_001.csv"
+filename = "modules/runtime/tests/data/DR_DEU_Merging_MT/vehicle_tracks_000.csv"
 trajectory_list, vehicle_dimension_list = read_tracks_from_csv(filename)
 
 # Parameters Definitions
@@ -84,33 +84,35 @@ for trajectory in trajectory_list:
     dynamic_models.append(SingleTrackModel(param_server))
 
 # Map Definition
-xodr_parser = XodrParser("modules/runtime/tests/data/DR_DEU_Merging_MT.xodr")
+xodr_parser = XodrParser(
+    "modules/runtime/tests/data/DR_DEU_Merging_MT_shifted.xodr")
 map_interface = MapInterface()
 map_interface.set_open_drive_map(xodr_parser.map)
 world.set_map(map_interface)
 
 # Agent Definition
-# for i, trajectory in enumerate(trajectory_list):
-#     agent_2d_shape = CarLimousine()
-#     init_state = trajectory[0]
-#     goal_polygon = Polygon2d(
-#         [0, 0, 0], [Point2d(-1, -1), Point2d(-1, 1), Point2d(1, 1), Point2d(1, -1)])
-#     goal_polygon = goal_polygon.translate(Point2d(-63, -61))
-#     agent_params = param_server.addChild("agent"+str(i))
-#     agent = Agent(init_state,
-#                   behavior_models[i],
-#                   dynamic_models[i],
-#                   execution_models[i],
-#                   agent_2d_shape,
-#                   agent_params,
-#                   GoalDefinitionPolygon(goal_polygon),
-#                   map_interface)
-#     world.add_agent(agent)
+for i, trajectory in enumerate(trajectory_list):
+    agent_2d_shape = CarLimousine()
+    init_state = trajectory[0]
+    goal_polygon = Polygon2d(
+        [0, 0, 0], [Point2d(-1, -1), Point2d(-1, 1), Point2d(1, 1), Point2d(1, -1)])
+    goal_polygon = goal_polygon.translate(Point2d(-63, -61))
+    agent_params = param_server.addChild("agent"+str(i))
+    agent = Agent(init_state,
+                  behavior_models[i],
+                  dynamic_models[i],
+                  execution_models[i],
+                  agent_2d_shape,
+                  agent_params,
+                  GoalDefinitionPolygon(goal_polygon),
+                  map_interface)
+    # world.add_agent(agent)
+
 
 # viewer
 viewer = MPViewer(params=param_server,
-                  x_range=[-240, 1000],
-                  y_range=[-150, 5000],
+                  x_range=[800, 1100],
+                  y_range=[900, 1100],
                   )
 
 # World Simulation
@@ -121,10 +123,10 @@ sim_real_time_factor = param_server["simulation"]["real_time_factor",
                                                   "execution in real-time or faster",
                                                   1]
 
-for _ in range(0, 5):
+for i in range(0, 36):
     world.step(sim_step_time)
     viewer.drawWorld(world)
-    viewer.drawTrajectory(trajectory_list[0], 'red')
+    viewer.drawTrajectory(trajectory_list[i], 'red')
     viewer.show(block=False)
     time.sleep(sim_step_time/sim_real_time_factor)
 

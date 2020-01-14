@@ -52,8 +52,10 @@ class MPViewer(BaseViewer):
     def drawTrajectory(self, trajectory, color):
         if len(trajectory) > 0:
             self.axes.plot(
-                trajectory[:, int(StateDefinition.X_POSITION)],
-                trajectory[:, int(StateDefinition.Y_POSITION)],
+                # trajectory[:, int(StateDefinition.X_POSITION)],
+                trajectory[:, 1],
+                # trajectory[:, int(StateDefinition.Y_POSITION)],
+                trajectory[:, 2],
                 color=self.getColor(color))
 
     def drawText(self, position, text, coordinate="axes", **kwargs):
