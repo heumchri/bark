@@ -21,6 +21,10 @@ from modules.runtime.viewer.panda3d_viewer import Panda3dViewer
 from modules.runtime.viewer.matplotlib_viewer import MPViewer
 from modules.runtime.commons.xodr_parser import XodrParser
 
+# Name and Output Directory
+# CHANGE THIS #
+mapfilename = "modules/runtime/tests/data/DR_DEU_Merging_MT_sliproad_shifted_fixed.xodr"
+trackfilename = "modules/runtime/tests/data/DR_DEU_Merging_MT/vehicle_tracks_000.csv"
 
 def read_tracks_from_csv(filename):
     # load trackfile
@@ -64,8 +68,7 @@ def read_tracks_from_csv(filename):
 
 
 # track file definition
-filename = "modules/runtime/tests/data/DR_DEU_Merging_MT/vehicle_tracks_000.csv"
-trajectory_list, vehicle_dimension_list = read_tracks_from_csv(filename)
+trajectory_list, vehicle_dimension_list = read_tracks_from_csv(trackfilename)
 
 # Parameters Definitions
 param_server = ParameterServer()
@@ -84,19 +87,20 @@ for trajectory in trajectory_list:
     dynamic_models.append(SingleTrackModel(param_server))
 
 # Map Definition
-xodr_parser = XodrParser(
-    "modules/runtime/tests/data/DR_DEU_Merging_MT_shifted.xodr")
+xodr_parser = XodrParser(mapfilename)
 map_interface = MapInterface()
 map_interface.set_open_drive_map(xodr_parser.map)
 world.set_map(map_interface)
 
 # Agent Definition
+agents_ready = []
+runtime = 0
 for i, trajectory in enumerate(trajectory_list):
     agent_2d_shape = CarLimousine()
     init_state = trajectory[0]
     goal_polygon = Polygon2d(
         [0, 0, 0], [Point2d(-1, -1), Point2d(-1, 1), Point2d(1, 1), Point2d(1, -1)])
-    goal_polygon = goal_polygon.translate(Point2d(-63, -61))
+    goal_polygon = goal_polygon.translate(Point2d(892, 1008))
     agent_params = param_server.addChild("agent"+str(i))
     agent = Agent(init_state,
                   behavior_models[i],
@@ -106,30 +110,48 @@ for i, trajectory in enumerate(trajectory_list):
                   agent_params,
                   GoalDefinitionPolygon(goal_polygon),
                   map_interface)
-    # world.add_agent(agent)
+    agents_ready.append({"agent": agent, "trajectory": trajectory})
+    runtime = max(runtime, trajectory[-1, 0])
 
 
 # viewer
 viewer = MPViewer(params=param_server,
-                  x_range=[800, 1100],
-                  y_range=[900, 1100],
+                  x_range=[880, 1020],
+                  y_range=[950, 1050],
                   )
 
 # World Simulation
+sim_step_time_value = 0.1
 sim_step_time = param_server["simulation"]["step_time",
                                            "Step-time used in simulation",
-                                           1]
+                                           sim_step_time_value]
 sim_real_time_factor = param_server["simulation"]["real_time_factor",
                                                   "execution in real-time or faster",
-                                                  1]
+                                                  1/sim_step_time_value]
 
-for i in range(0, 36):
+agents_running = []
+print(runtime)
+sim_steps = int(runtime/sim_step_time+1)
+for i in range(sim_steps):
+    # check if agent is about to start
+    for agent in agents_ready:
+        if world.time >= agent["trajectory"][0, 0]:
+            world.add_agent(agent["agent"])
+            agents_ready.remove(agent)
+            agents_running.append(agent)
+
+    # check if agent is about to end
+    # problem: last timestep is not plotted because of float error (17.10001 > 17.1)
+    for agent in agents_running:
+        if world.time > agent["trajectory"][-1, 0]:
+            world.remove_agent(agent["agent"])
+            agents_running.remove(agent)
+
     world.step(sim_step_time)
     viewer.drawWorld(world)
-    viewer.drawTrajectory(trajectory_list[i], 'red')
     viewer.show(block=False)
     time.sleep(sim_step_time/sim_real_time_factor)
 
 param_server.save(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                "params",
-                               "od8_const_vel_one_agent_written.json"))
+                               "interaction_dataset.json"))

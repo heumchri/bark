@@ -16,22 +16,8 @@ dynamic::Trajectory behavior::BehaviorDataDriven::Plan(
     float delta_time, const world::ObservedWorld& observed_world) {
   using namespace dynamic;
 
-  double start_time = observed_world.get_world_time();
-  int current_row = 0;
-  while (traj_from_dataset(current_row, StateDefinition::TIME_POSITION) <
-             start_time &&
-         current_row < traj_from_dataset.rows()) {
-    current_row++;
-  }
-
-  // Trajectory traj = traj_from_dataset(Eigen::seq(current_row, Eigen::last),
-  // Eigen::all);
-  Trajectory traj = traj_from_dataset.block(
-      current_row, 0, traj_from_dataset.rows() - current_row,
-      StateDefinition::TIME_POSITION);
-
-  this->set_last_trajectory(traj);
-  return traj;
+  this->set_last_trajectory(traj_from_dataset);
+  return traj_from_dataset;
 }
 
 }  // namespace models
